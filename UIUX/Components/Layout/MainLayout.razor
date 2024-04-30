@@ -3,9 +3,9 @@
 <MudThemingProvider />
 <MudLayout>
     <MudAppBar Elevation="1">
-        <MudText Typo="Typo.h5" Class="ml-3">Student Wellbeing App</MudText>
+        <MudText Typo="Typo.h5" Class="ml-3">Personal Supervisor Student Tracker</MudText>
     </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2" Persistent="true" Width="200px" Height="100%">
         <NavMenu />
     </MudDrawer>
     <MudMainContent Class="mt-16 pa-4">

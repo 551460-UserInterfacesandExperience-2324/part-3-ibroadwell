@@ -8,23 +8,38 @@
 
 <h3>@MeetingService.StudentPageMeetingParam</h3>
 
-<MudDatePicker Label="yyyy-MM-dd" Editable="true" @bind-Date="date" PickerVariant="PickerVariant.Dialog" Mask="@(new DateMask("0000-00-00"))" DateFormat="yyyy-MM-dd" @onblur="HandleDateTimeChange"/>
-<MudTimePicker Label="24 hours" @bind-Time="time" PickerVariant="PickerVariant.Dialog" @onblur="HandleDateTimeChange"/>
-<MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!IsDateTimeSelected)" OnClick="InitVar">Book</MudButton>
-<h3>@chosenMeeting.ToString()</h3>
+<MudDatePicker Label="yyyy-MM-dd" Editable="true" @bind-Date="date" PickerVariant="PickerVariant.Dialog" Mask="@(new DateMask("0000-00-00"))" DateFormat="yyyy-MM-dd"/>
+<MudTimePicker Label="24 hours" @bind-Time="time" PickerVariant="PickerVariant.Dialog"/>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="InitVar">Book</MudButton>
 
 @code {
-    DateTime? date = DateTime.Today;
-    TimeSpan? time = new TimeSpan(09, 00, 00);
+    DateTime? date;
+    TimeSpan? time;
+
+    protected override void OnInitialized()
+    {
+        DateTime now = DateTime.Now;
+
+        if (now.Hour >= 17)
+        {
+            date = now.Date.AddDays(1);
+            time = new TimeSpan(9, 0, 0); // Set time to 09:00 on the next day
+        }
+        else
+        {
+            date = now.Date;
+            if (now.Hour >= 9)
+            {
+                time = new TimeSpan(now.Hour + 1, 0, 0); // Set time to the next full hour
+            }
+            else
+            {
+                time = new TimeSpan(9, 0, 0); // Set time to 09:00
+            }
+        }
+    }
 
     DateTime chosenMeeting;
-
-    bool IsDateTimeSelected { get; set; }
-
-    void HandleDateTimeChange()
-    {
-        IsDateTimeSelected = date.HasValue && time.HasValue;
-    }
 
     public void InitVar()
     {
