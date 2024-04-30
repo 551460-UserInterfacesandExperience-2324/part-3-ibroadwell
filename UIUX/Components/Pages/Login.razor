@@ -1,0 +1,62 @@
+﻿
+@page "/"
+
+
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@using MudBlazor
+@using UIUX.Components
+@inject NavigationManager NavManager
+@inject LoginService LoginService
+@inject MeetingService MeetingService
+@inject StudentService StudentService
+@inject AppState State
+
+@rendermode InteractiveServer
+<PageTitle>Login</PageTitle>
+<h1>Login</h1>
+
+
+<MudGrid>
+    <MudItem xs="12" sm="7" style="margin-top: 50px;">
+        <MudPaper Class="pa-4">
+            <MudForm @ref="form">
+                <MudTextField T="string" Label="Username" @bind-Value="@username" />
+                <MudTextField T="string" Label="Password" @ref="pwField1"
+                              InputType="InputType.Password" @bind-Value="@password" />
+                <MudItem style="margin-bottom: 16px;"></MudItem>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@ValidateAndAuthenticate">Login</MudButton>
+            </MudForm>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+
+
+@code {
+    string username;
+    string password;
+    bool isAuthenticated = false;
+
+    MudTextField<string> pwField1;
+    MudForm form;
+
+    private void ValidateAndAuthenticate()
+    {
+
+        if (username == "alex" && password == "broadwell")
+        {
+            isAuthenticated = true;
+            LoginService.name = "Alex Broadwell";
+            LoginService.IsLoggedIn = true;
+            MeetingService.SetBaseMeetings();
+            StudentService.SetBaseStudents();
+            LoginService.Login = "Signout";
+            State.NotifyStateChanged();
+            StateHasChanged();
+            NavManager.NavigateTo("/meetings");
+        }
+        
+    }
+}
+

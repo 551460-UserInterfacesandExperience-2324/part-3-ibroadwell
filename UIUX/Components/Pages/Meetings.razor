@@ -1,0 +1,53 @@
+﻿@page "/meetings"
+
+@rendermode InteractiveServer
+@inject LoginService LoginService
+@inject MeetingService MeetingService
+
+@using MudBlazor
+@using System.Timers
+<PageTitle>Meetings</PageTitle>
+<h1>@LoginService.name Meetings</h1>
+<h2>Today's Date: @MeetingService.currentDateTime.ToShortDateString()</h2>
+<h2>
+    @currentTime.ToString("HH:mm")
+</h2>
+
+@using System.Net.Http.Json
+
+<MudDataGrid Items="@MeetingService.meetings" Filterable="false" SortMode="@SortMode.None" Groupable="false">
+    <Columns>
+        <PropertyColumn Property="x => x.StudentName" Title="Student Name"/>
+        <PropertyColumn Property="x => x.MeetingDateTime.ToShortDateString()" Title="Date"/>
+        <PropertyColumn Property="x => x.MeetingDateTime.ToShortTimeString()" Title="Time" />
+        <PropertyColumn Property="x => x.Location" Title="Location"/>
+    </Columns>
+</MudDataGrid>
+@code {
+    protected override void OnInitialized()
+    {
+        MeetingService.SortMeetings();
+    }
+
+    private DateTime currentTime;
+
+    protected override async Task OnInitializedAsync()
+    {
+        MeetingService.SortMeetings(); // Sort meetings data
+        currentTime = DateTime.Now; // Initialize with current time
+        UpdateTime();
+    }
+
+    private void UpdateTime()
+    {
+        var timer = new Timer(60000 - DateTime.Now.Second * 1000 - DateTime.Now.Millisecond); // Calculate time to next minute
+        timer.Elapsed += async (sender, e) =>
+        {
+            currentTime = DateTime.Now;
+            await InvokeAsync(StateHasChanged);
+            timer.Interval = 60000; // Update interval for subsequent updates
+        };
+        timer.AutoReset = false; // Ensures the timer only triggers once
+        timer.Start();
+    }
+}

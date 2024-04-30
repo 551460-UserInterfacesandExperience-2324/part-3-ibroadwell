@@ -1,0 +1,39 @@
+﻿@page "/bookmeeting"
+@using MudBlazor
+@inject NavigationManager NavManager
+@inject LoginService LoginService
+@inject MeetingService MeetingService
+@inject StudentService StudentService
+@rendermode InteractiveServer
+
+<h3>@MeetingService.StudentPageMeetingParam</h3>
+
+<MudDatePicker Label="yyyy-MM-dd" Editable="true" @bind-Date="date" PickerVariant="PickerVariant.Dialog" Mask="@(new DateMask("0000-00-00"))" DateFormat="yyyy-MM-dd" @onblur="HandleDateTimeChange"/>
+<MudTimePicker Label="24 hours" @bind-Time="time" PickerVariant="PickerVariant.Dialog" @onblur="HandleDateTimeChange"/>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!IsDateTimeSelected)" OnClick="InitVar">Book</MudButton>
+<h3>@chosenMeeting.ToString()</h3>
+
+@code {
+    DateTime? date = DateTime.Today;
+    TimeSpan? time = new TimeSpan(09, 00, 00);
+
+    DateTime chosenMeeting;
+
+    bool IsDateTimeSelected { get; set; }
+
+    void HandleDateTimeChange()
+    {
+        IsDateTimeSelected = date.HasValue && time.HasValue;
+    }
+
+    public void InitVar()
+    {
+        DateTime chosenDate = (DateTime)date;
+        TimeSpan chosenTime = (TimeSpan)time;
+
+        chosenMeeting = chosenDate.Date.Add(chosenTime);
+        MeetingService.Meeting meeting1 = new MeetingService.Meeting(MeetingService.StudentPageMeetingParam, chosenMeeting, "RBB-217");
+        MeetingService.AddMeeting(meeting1);
+        NavManager.NavigateTo("/meetings");
+    }
+}

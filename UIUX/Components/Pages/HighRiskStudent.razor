@@ -1,0 +1,40 @@
+﻿@page "/highriskstudents"
+@rendermode InteractiveServer
+@inject NavigationManager NavManager
+@inject LoginService LoginService
+@inject MeetingService MeetingService
+@inject StudentService StudentService
+@using UIUX.Components
+
+@using MudBlazor
+@using System.Timers
+<PageTitle>High Risk Students</PageTitle>
+<h1>@LoginService.name High Risk Student's</h1>
+
+<MudDataGrid Items="@StudentService.highRiskStudents" Filterable="false" SortMode="@SortMode.None" Groupable="false">
+    <Columns>
+        <PropertyColumn Property="x => x.StudentName" Title="Student Name"/>
+        <PropertyColumn Property="x => x.AverageReflection" Title="Average Reflection Score"/>
+        <PropertyColumn Property="x => x.MostRecentReflection" Title="Latest Reflection Score"/>
+        <PropertyColumn Property="x => x.YearOfStudy" Title="Year Of Study"/>
+        <TemplateColumn CellClass="d-flex justify-end">
+            <CellTemplate>
+                @{
+                    var student = context.Item; // Directly access the current item
+                }
+                <MudButton Size="@Size.Small" OnClick="@(() => BookMeeting(student))" Variant="@Variant.Filled" Color="@Color.Primary">Book Meeting</MudButton>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+</MudDataGrid>
+
+@code {
+    public void BookMeeting(StudentService.Student student)
+    {
+        if (student != null)
+        {
+            MeetingService.StudentPageMeetingParam = student.StudentName;
+            NavManager.NavigateTo("/bookmeeting");
+        }
+    }
+}

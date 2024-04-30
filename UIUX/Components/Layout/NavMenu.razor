@@ -1,0 +1,51 @@
+﻿@inject NavigationManager NavigationManager
+@inject LoginService LoginService
+@inject AppState State
+@rendermode InteractiveServer
+<MudNavMenu>
+    
+
+    @if (LoginService.IsLoggedIn)
+    {
+                  <MudNavLink Href="meetings" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.CalendarMonth">Meetings</MudNavLink>  
+            <MudNavLink Href="student" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">Students</MudNavLink>
+                <MudNavLink Href="highriskstudents" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonOutline">High Risk Students</MudNavLink>
+                
+    }
+    @if (!LoginService.IsLoggedIn)
+    {
+            <MudNavLink Href="/" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.RemoveCircle" OnClick="HandleLogout">@LoginService.Login</MudNavLink>
+    }
+
+    
+
+    </MudNavMenu>
+
+
+    @code {
+
+    protected override void OnInitialized()
+    {
+        LoginService.OnLoginStateChanged += HandleLoginStateChanged;
+    }
+
+    private void HandleLoginStateChanged()
+    {
+        StateHasChanged();
+    }
+
+
+    void HandleLogout()
+    {
+        if (LoginService.IsLoggedIn)
+        {
+            LoginService.IsLoggedIn = false;
+            LoginService.Login = "Login";
+            StateHasChanged();
+        }
+
+        NavigationManager.NavigateTo("/");
+    }
+
+    }
+}
